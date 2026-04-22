@@ -21,10 +21,11 @@ export async function POST(req) {
     if (!machineId?.trim() || !plan || !clientName?.trim())
         return NextResponse.json({ error: 'clientName, machineId and plan are required' }, { status: 400 });
 
+    const cleanMachineId = machineId.trim().toUpperCase().replace(/[-\s]/g, '');
     const dl        = Math.max(1, Math.min(255, parseInt(deviceLimit) || 1));
     const expiryTs  = planToExpiry(plan, customDays);
     const isLifetime = plan === 'lifetime';
-    const key       = generateKey({ machineId: machineId.trim().toUpperCase(), expiryTs, deviceLimit: dl });
+    const key       = generateKey({ machineId: cleanMachineId, expiryTs, deviceLimit: dl });
     const priceNum  = Math.max(0, parseFloat(price) || 0);
     const discountedNumRaw = (discountedPrice === '' || discountedPrice === undefined || discountedPrice === null)
         ? priceNum
@@ -41,7 +42,7 @@ export async function POST(req) {
         price:           priceNum,
         discountedPrice: discountedNum,
         discountAmount,
-        machineId:    machineId.trim().toUpperCase(),
+        machineId:    cleanMachineId,
         clientName:   clientName.trim(),
         clientPhone:      (clientPhone || '').trim(),
         clientEmail:      (clientEmail || '').trim(),

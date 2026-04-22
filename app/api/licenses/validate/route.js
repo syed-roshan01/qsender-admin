@@ -11,7 +11,7 @@ export async function POST(req) {
             return NextResponse.json({ valid: false, error: 'key and machineId required' });
 
         const cleanKey = key.trim().toUpperCase();
-        const cleanMid = machineId.trim().toUpperCase();
+        const cleanMid = machineId.trim().toUpperCase().replace(/[-\s]/g, '');
 
         const license = await getLicense(cleanKey);
         if (!license)
